@@ -47,19 +47,19 @@ public abstract class BaseWordClockWidgetProvider extends AppWidgetProvider {
         float fontSize = WidgetPreferences.getFontSize(context, appWidgetId, 24f);
 
         if (views.getLayoutId() == R.layout.horizontal_widget_layout) {
-            views.setTextViewTextColor(R.id.time_text, textColor);
+            views.setTextColor(R.id.time_text, textColor);
             views.setTextViewTextSize(R.id.time_text, 0, fontSize);
         } else {
-            views.setTextViewTextColor(R.id.hour_text, textColor);
+            views.setTextColor(R.id.hour_text, textColor);
             views.setTextViewTextSize(R.id.hour_text, 0, fontSize);
-            views.setTextViewTextColor(R.id.minute_text, textColor);
+            views.setTextColor(R.id.minute_text, textColor);
             views.setTextViewTextSize(R.id.minute_text, 0, fontSize);
-            views.setTextViewTextColor(R.id.day_night_text, WidgetPreferences.getColor(context, appWidgetId, getDefaultBorderColor()));
+            views.setTextColor(R.id.day_night_text, WidgetPreferences.getColor(context, appWidgetId, getDefaultBorderColor()));
             views.setTextViewTextSize(R.id.day_night_text, 0, fontSize * 0.75f);
             if (views.getLayoutId() == R.layout.extended_widget_layout) {
-                views.setTextViewTextColor(R.id.day_of_week_text, textColor);
+                views.setTextColor(R.id.day_of_week_text, textColor);
                 views.setTextViewTextSize(R.id.day_of_week_text, 0, fontSize * 0.6f);
-                views.setTextViewTextColor(R.id.date_text, textColor);
+                views.setTextColor(R.id.date_text, textColor);
                 views.setTextViewTextSize(R.id.date_text, 0, fontSize * 0.5f);
             }
         }
