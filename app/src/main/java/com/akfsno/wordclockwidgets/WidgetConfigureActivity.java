@@ -98,6 +98,14 @@ public class WidgetConfigureActivity extends Activity {
         Intent resultValue = new Intent();
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         setResult(RESULT_OK, resultValue);
+
+        // Update the widget
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        Intent intent = new Intent(this, WordClockWidgetProvider.class); // Or determine the correct provider
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[]{appWidgetId});
+        sendBroadcast(intent);
+
         finish();
     }
 
