@@ -67,6 +67,26 @@ public class WidgetPreferences {
         return prefs.getInt("backgroundAlpha_" + appWidgetId, defaultAlpha);
     }
 
+    public static void saveOffsetX(Context context, int appWidgetId, String key, int value) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putInt(key + "_offsetX_" + appWidgetId, value).apply();
+    }
+
+    public static int getOffsetX(Context context, int appWidgetId, String key, int defaultValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getInt(key + "_offsetX_" + appWidgetId, defaultValue);
+    }
+
+    public static void saveOffsetY(Context context, int appWidgetId, String key, int value) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putInt(key + "_offsetY_" + appWidgetId, value).apply();
+    }
+
+    public static int getOffsetY(Context context, int appWidgetId, String key, int defaultValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getInt(key + "_offsetY_" + appWidgetId, defaultValue);
+    }
+
     public static void saveFontType(Context context, int appWidgetId, String fontType) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         prefs.edit().putString("fontType_" + appWidgetId, fontType).apply();
@@ -95,5 +115,45 @@ public class WidgetPreferences {
     public static String getStyle(Context context, int appWidgetId, String defaultStyle) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return prefs.getString("style_" + appWidgetId, defaultStyle);
+    }
+
+    public static void saveShowSeconds(Context context, int appWidgetId, boolean showSeconds) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean("showSeconds_" + appWidgetId, showSeconds).apply();
+    }
+
+    public static boolean getShowSeconds(Context context, int appWidgetId, boolean defaultValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean("showSeconds_" + appWidgetId, defaultValue);
+    }
+
+    public static void saveShowDate(Context context, int appWidgetId, boolean showDate) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean("showDate_" + appWidgetId, showDate).apply();
+    }
+
+    public static boolean getShowDate(Context context, int appWidgetId, boolean defaultValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean("showDate_" + appWidgetId, defaultValue);
+    }
+
+    public static void saveShowDayOfWeek(Context context, int appWidgetId, boolean showDayOfWeek) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean("showDayOfWeek_" + appWidgetId, showDayOfWeek).apply();
+    }
+
+    public static boolean getShowDayOfWeek(Context context, int appWidgetId, boolean defaultValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean("showDayOfWeek_" + appWidgetId, defaultValue);
+    }
+
+    public static void saveUse12HourFormat(Context context, int appWidgetId, boolean use12Hour) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean("use12HourFormat_" + appWidgetId, use12Hour).apply();
+    }
+
+    public static boolean getUse12HourFormat(Context context, int appWidgetId, boolean defaultValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean("use12HourFormat_" + appWidgetId, defaultValue);
     }
 }

@@ -28,6 +28,15 @@ public class NumberToWords {
         return hours[hour];
     }
 
+    public static String convertHour24(int hour) {
+        if (hour == 0) return "ноль";
+        if (hour < 0) return "";
+        if (hour < 10) return units[hour];
+        if (hour < 20) return teens[hour - 10];
+        if (hour < 24) return convert(hour);
+        return "";
+    }
+
     public static String convertMinute(int minute) {
         if (minute == 0) return "ноль";
         return convert(minute);
