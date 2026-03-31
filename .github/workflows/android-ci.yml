@@ -24,12 +24,18 @@ jobs:
           java-version: '17'
           cache: gradle
 
-      - name: Accept Android SDK licenses
-        run: yes | sdkmanager --licenses
+      - name: Set ANDROID_HOME
+        run: echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+
+      - name: Add SDK tools to PATH
+        run: echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
 
       - name: Ensure local.properties points to SDK
         run: |
           echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
+
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses
 
       - name: Build debug APK
         run: ./gradlew clean assembleDebug --no-daemon
