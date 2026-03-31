@@ -194,7 +194,7 @@ public class BlockAdapter extends BaseExpandableListAdapter {
     }
 
     private void setOffsetX(String key, int value) {
-        WidgetPreferences.setOffsetX(context, appWidgetId, key, value);
+        WidgetPreferences.saveOffsetX(context, appWidgetId, key, value);
     }
 
     private int getOffsetY(String key) {
