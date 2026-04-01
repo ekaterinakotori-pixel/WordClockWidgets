@@ -155,6 +155,34 @@
             android:layout_height="wrap_content"
             android:text="2" />
 
+        <!-- Day Night Size -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Размер времени суток"
+            android:textSize="18sp" />
+
+        <SeekBar
+            android:id="@+id/day_night_size_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="50"
+            android:progress="8" />
+
+        <TextView
+            android:id="@+id/day_night_size_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="18" />
+
+        <!-- 12/24 Hour Format -->
+        <CheckBox
+            android:id="@+id/use_12_hour_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12-часовой формат"
+            android:checked="true" />
+
         <!-- Hour Size -->
         <TextView
             android:layout_width="wrap_content"

@@ -392,8 +392,13 @@ public class WidgetConfigureActivity extends Activity {
         int borderColor = WidgetPreferences.getBorderColor(this, appWidgetId, getResources().getColor(android.R.color.holo_red_dark));
         // Set border color by modifying the drawable
         View container = findViewById(R.id.preview_container);
-        android.graphics.drawable.GradientDrawable drawable = (android.graphics.drawable.GradientDrawable) container.getBackground();
-        drawable.setStroke(2, borderColor);
+        android.graphics.drawable.Drawable bg = container.getBackground();
+        if (bg instanceof android.graphics.drawable.GradientDrawable) {
+            android.graphics.drawable.GradientDrawable drawable = (android.graphics.drawable.GradientDrawable) bg.mutate();
+            drawable.setStroke(2, borderColor);
+        } else {
+            // Fallback if not GradientDrawable
+        }
     }
 
     private void setupButtons() {

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -48,8 +49,17 @@ public class BasicStyleActivity extends Activity {
         setupTextColor();
         setupBorderColor();
         setupBorderWidth();
+        setupDayNightSize();
+        setupUse12Hour();
         setupHourSize();
         setupMinuteSize();
+
+        // Set basic style defaults
+        WidgetPreferences.saveShowHour(this, appWidgetId, true);
+        WidgetPreferences.saveShowMinute(this, appWidgetId, true);
+        WidgetPreferences.saveShowDayNight(this, appWidgetId, true);
+        WidgetPreferences.saveShowDate(this, appWidgetId, false);
+        WidgetPreferences.saveShowDayOfWeek(this, appWidgetId, false);
 
         Button saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(v -> saveAndFinish());
@@ -209,6 +219,44 @@ public class BasicStyleActivity extends Activity {
         });
     }
 
+    private void setupDayNightSize() {
+        SeekBar seekBar = findViewById(R.id.day_night_size_seekbar);
+        TextView valueText = findViewById(R.id.day_night_size_value);
+        float current = WidgetPreferences.getDayNightFontSize(this, appWidgetId, 18f);
+        seekBar.setMax(50);
+        seekBar.setProgress((int) (current - 10));
+        valueText.setText(String.valueOf((int) current));
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                float size = 10 + progress;
+                WidgetPreferences.saveDayNightFontSize(BasicStyleActivity.this, appWidgetId, size);
+                valueText.setText(String.valueOf((int) size));
+                updatePreview();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+    }
+
+    private void setupUse12Hour() {
+        CheckBox checkBox = findViewById(R.id.use_12_hour_checkbox);
+        boolean current = WidgetPreferences.getUse12HourFormat(this, appWidgetId, true);
+        checkBox.setChecked(current);
+        checkBox.setText(current ? "12-часовой формат" : "24-часовой формат");
+
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            WidgetPreferences.saveUse12HourFormat(BasicStyleActivity.this, appWidgetId, isChecked);
+            checkBox.setText(isChecked ? "12-часовой формат" : "24-часовой формат");
+            updatePreview();
+        });
+    }
+
     private void setupHourSize() {
         SeekBar seekBar = findViewById(R.id.hour_size_seekbar);
         TextView valueText = findViewById(R.id.hour_size_value);
@@ -298,7 +346,7 @@ public class BasicStyleActivity extends Activity {
 
         previewHour.setTextSize(WidgetPreferences.getFontSize(this, appWidgetId, 24f));
         previewMinute.setTextSize(WidgetPreferences.getMinuteFontSize(this, appWidgetId, 24f));
-        previewDayNight.setTextSize(18f);
+        previewDayNight.setTextSize(WidgetPreferences.getDayNightFontSize(this, appWidgetId, 18f));
 
         previewHour.setVisibility(View.VISIBLE);
         previewMinute.setVisibility(View.VISIBLE);

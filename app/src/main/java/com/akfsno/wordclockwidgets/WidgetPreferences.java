@@ -257,6 +257,16 @@ public class WidgetPreferences {
         return prefs.getFloat("minuteFontSize_" + appWidgetId, defaultSize);
     }
 
+    public static void saveDayNightFontSize(Context context, int appWidgetId, float fontSize) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putFloat("dayNightFontSize_" + appWidgetId, fontSize).apply();
+    }
+
+    public static float getDayNightFontSize(Context context, int appWidgetId, float defaultSize) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getFloat("dayNightFontSize_" + appWidgetId, defaultSize);
+    }
+
     public static void saveDateOffsetX(Context context, int appWidgetId, int value) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         prefs.edit().putInt("date_offsetX_" + appWidgetId, value).apply();

@@ -96,10 +96,9 @@ public abstract class BaseWordClockWidgetProvider extends AppWidgetProvider {
         bgColor = (bgColor & 0x00FFFFFF) | ((alpha & 0xFF) << 24);
         views.setInt(R.id.widget_container, "setBackgroundColor", bgColor);
 
-        int borderColor = WidgetPreferences.getBorderColor(context, appWidgetId, getDefaultBorderColor());
-        int borderWidth = WidgetPreferences.getBorderWidth(context, appWidgetId, 2);
-        // Note: we keep frame decoration by setting a solid background tint (if shape not fully supported)
-        views.setInt(R.id.widget_border, "setBackgroundColor", borderColor);
+        // Note: border color not applied in RemoteViews, using default drawable
+        // int borderColor = WidgetPreferences.getBorderColor(context, appWidgetId, getDefaultBorderColor());
+        // views.setInt(R.id.widget_border, "setBackgroundColor", borderColor);
 
         Intent configIntent = new Intent(context, WidgetConfigureActivity.class);
         configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
