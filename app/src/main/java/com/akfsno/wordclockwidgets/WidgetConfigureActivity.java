@@ -65,12 +65,12 @@ public class WidgetConfigureActivity extends Activity {
 
     private void initializeViews() {
         blockList = findViewById(R.id.block_list);
-        previewHour = findViewById(R.id.preview_hour_text);
-        previewMinute = findViewById(R.id.preview_minute_text);
-        previewSecond = findViewById(R.id.preview_second_text);
-        previewDayNight = findViewById(R.id.preview_day_night_text);
-        previewDate = findViewById(R.id.preview_date_text);
-        previewDayOfWeek = findViewById(R.id.preview_day_of_week_text);
+        previewHour = findViewById(R.id.preview_hour);
+        previewMinute = findViewById(R.id.preview_minute);
+        previewSecond = findViewById(R.id.preview_second);
+        previewDayNight = findViewById(R.id.preview_day_night);
+        previewDate = findViewById(R.id.preview_date);
+        previewDayOfWeek = findViewById(R.id.preview_day_of_week);
         saveButton = findViewById(R.id.save_button);
         resetAllButton = findViewById(R.id.reset_all_button);
     }
@@ -335,12 +335,14 @@ public class WidgetConfigureActivity extends Activity {
 
         previewHour.setTextColor(WidgetPreferences.getHourTextColor(this, appWidgetId, getResources().getColor(android.R.color.black)));
         previewMinute.setTextColor(WidgetPreferences.getMinuteTextColor(this, appWidgetId, getResources().getColor(android.R.color.black)));
+        previewSecond.setTextColor(WidgetPreferences.getSecondTextColor(this, appWidgetId, getResources().getColor(android.R.color.black)));
         previewDayNight.setTextColor(WidgetPreferences.getDayNightTextColor(this, appWidgetId, getResources().getColor(android.R.color.holo_red_dark)));
         previewDate.setTextColor(WidgetPreferences.getDateTextColor(this, appWidgetId, getResources().getColor(android.R.color.black)));
         previewDayOfWeek.setTextColor(WidgetPreferences.getDayOfWeekTextColor(this, appWidgetId, getResources().getColor(android.R.color.black)));
 
         previewHour.setVisibility(showHour ? View.VISIBLE : View.GONE);
         previewMinute.setVisibility(showMinute ? View.VISIBLE : View.GONE);
+        previewSecond.setVisibility(showSecond ? View.VISIBLE : View.GONE);
         previewDayNight.setVisibility(showDayNight ? View.VISIBLE : View.GONE);
         previewDate.setVisibility(showDate ? View.VISIBLE : View.GONE);
         previewDayOfWeek.setVisibility(showDayOfWeek ? View.VISIBLE : View.GONE);
