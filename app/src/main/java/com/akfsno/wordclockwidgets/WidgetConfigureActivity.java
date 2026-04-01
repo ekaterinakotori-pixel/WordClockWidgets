@@ -67,6 +67,7 @@ public class WidgetConfigureActivity extends Activity {
         blockList = findViewById(R.id.block_list);
         previewHour = findViewById(R.id.preview_hour);
         previewMinute = findViewById(R.id.preview_minute);
+        previewSecond = findViewById(R.id.preview_second);
         previewDayNight = findViewById(R.id.preview_day_night);
         previewDate = findViewById(R.id.preview_date);
         previewDayOfWeek = findViewById(R.id.preview_day_of_week);
