@@ -107,18 +107,26 @@ public class WidgetConfigureActivity extends Activity {
     private void setPreviewContainerByProvider() {
         if (previewContainer == null) return;
 
-        // Preview in constructor should always look like the base style (3x1 preview size)
-        int widthDp = 216; // 3x1 preview width
-        int heightDp = 180; // base bounding height
+        // Preview should occupy the upper third of the screen
+        android.util.DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
 
-        int newWidth = dpToPx(widthDp);
-        int newHeight = dpToPx(heightDp);
+        int newWidth = screenWidth;
+        int newHeight = screenHeight / 3;
 
         ViewGroup.LayoutParams params = previewContainer.getLayoutParams();
         if (params != null) {
             params.width = newWidth;
             params.height = newHeight;
             previewContainer.setLayoutParams(params);
+        }
+
+        // Set margins to zero to fit the preview exactly
+        ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) previewContainer.getLayoutParams();
+        if (marginParams != null) {
+            marginParams.setMargins(0, 0, 0, 0);
+            previewContainer.setLayoutParams(marginParams);
         }
     }
 
