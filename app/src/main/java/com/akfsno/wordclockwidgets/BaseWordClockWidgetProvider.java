@@ -1,5 +1,6 @@
 package com.akfsno.wordclockwidgets;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -14,10 +15,12 @@ import java.util.Locale;
 
 public abstract class BaseWordClockWidgetProvider extends AppWidgetProvider {
 
+    private static final String UPDATE_ACTION = "UPDATE_WIDGET";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        if (Intent.ACTION_TIME_TICK.equals(intent.getAction()) || Intent.ACTION_TIMEZONE_CHANGED.equals(intent.getAction())) {
+        if (Intent.ACTION_TIME_TICK.equals(intent.getAction()) || Intent.ACTION_TIMEZONE_CHANGED.equals(intent.getAction()) || UPDATE_ACTION.equals(intent.getAction())) {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             ComponentName thisWidget = new ComponentName(context, this.getClass());
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
@@ -32,6 +35,16 @@ public abstract class BaseWordClockWidgetProvider extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+    }
+
+    @Override
+    public void onDisabled(Context context) {
+        super.onDisabled(context);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, this.getClass());
+        intent.setAction(UPDATE_ACTION);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        alarmManager.cancel(pendingIntent);
     }
 
     protected abstract int getLayoutResource(Context context, int appWidgetId);
@@ -78,6 +91,27 @@ public abstract class BaseWordClockWidgetProvider extends AppWidgetProvider {
 
         setTexts(views, hourText, minuteText, dayNightText, dayOfWeekText, dateText);
 
+        // Apply offsets using padding approximation
+        int hourDx = WidgetPreferences.getOffsetX(context, appWidgetId, "hour", 0);
+        int hourDy = WidgetPreferences.getOffsetY(context, appWidgetId, "hour", 0);
+        views.setViewPadding(R.id.hour_text, Math.max(0, hourDx), Math.max(0, hourDy), Math.max(0, -hourDx), Math.max(0, -hourDy));
+
+        int minuteDx = WidgetPreferences.getOffsetX(context, appWidgetId, "minute", 0);
+        int minuteDy = WidgetPreferences.getOffsetY(context, appWidgetId, "minute", 0);
+        views.setViewPadding(R.id.minute_text, Math.max(0, minuteDx), Math.max(0, minuteDy), Math.max(0, -minuteDx), Math.max(0, -minuteDy));
+
+        int dayNightDx = WidgetPreferences.getDayNightOffsetX(context, appWidgetId, 0);
+        int dayNightDy = WidgetPreferences.getDayNightOffsetY(context, appWidgetId, 0);
+        views.setViewPadding(R.id.day_night_text, Math.max(0, dayNightDx), Math.max(0, dayNightDy), Math.max(0, -dayNightDx), Math.max(0, -dayNightDy));
+
+        int dateDx = WidgetPreferences.getDateOffsetX(context, appWidgetId, 0);
+        int dateDy = WidgetPreferences.getDateOffsetY(context, appWidgetId, 0);
+        views.setViewPadding(R.id.date_text, Math.max(0, dateDx), Math.max(0, dateDy), Math.max(0, -dateDx), Math.max(0, -dateDy));
+
+        int dayOfWeekDx = WidgetPreferences.getDayOfWeekOffsetX(context, appWidgetId, 0);
+        int dayOfWeekDy = WidgetPreferences.getDayOfWeekOffsetY(context, appWidgetId, 0);
+        views.setViewPadding(R.id.day_of_week_text, Math.max(0, dayOfWeekDx), Math.max(0, dayOfWeekDy), Math.max(0, -dayOfWeekDx), Math.max(0, -dayOfWeekDy));
+
         int hourColor = WidgetPreferences.getHourTextColor(context, appWidgetId, getDefaultTextColor());
         int minuteColor = WidgetPreferences.getMinuteTextColor(context, appWidgetId, getDefaultTextColor());
         int dayNightColor = WidgetPreferences.getDayNightTextColor(context, appWidgetId, getDefaultBorderColor());
@@ -112,6 +146,14 @@ public abstract class BaseWordClockWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widget_container, pendingIntent);
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
+
+        // Schedule next update for the next minute
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent updateIntent = new Intent(context, this.getClass());
+        updateIntent.setAction(UPDATE_ACTION);
+        PendingIntent alarmPendingIntent = PendingIntent.getBroadcast(context, appWidgetId, updateIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        long nextMinute = (System.currentTimeMillis() / 60000 + 1) * 60000;
+        alarmManager.setRepeating(AlarmManager.RTC, nextMinute, 60000, alarmPendingIntent);
 
         // force new update for the next minute
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_container);

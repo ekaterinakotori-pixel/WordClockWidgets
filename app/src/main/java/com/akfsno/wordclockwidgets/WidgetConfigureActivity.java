@@ -121,6 +121,7 @@ public class WidgetConfigureActivity extends Activity {
         blockList.setAdapter(adapter);
 
         blockList.setOnChildClickListener((parent, v, groupPosition, childPosition, id) -> {
+            saveOffsets();
             selectedBlock = getBlockKey(groupPosition);
             updateCoordinates();
             return true;
