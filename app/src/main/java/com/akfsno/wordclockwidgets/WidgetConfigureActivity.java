@@ -274,20 +274,20 @@ public class WidgetConfigureActivity extends Activity {
 
     private void loadOffsets() {
         blockOffsets.put("hour", new int[]{
-                WidgetPreferences.getOffsetX(this, appWidgetId, "hour", 0),
-                WidgetPreferences.getOffsetY(this, appWidgetId, "hour", 0)});
+                widgetToPreviewX(WidgetPreferences.getOffsetX(this, appWidgetId, "hour", 0)),
+                widgetToPreviewY(WidgetPreferences.getOffsetY(this, appWidgetId, "hour", 0))});
         blockOffsets.put("minute", new int[]{
-                WidgetPreferences.getOffsetX(this, appWidgetId, "minute", 0),
-                WidgetPreferences.getOffsetY(this, appWidgetId, "minute", 0)});
+                widgetToPreviewX(WidgetPreferences.getOffsetX(this, appWidgetId, "minute", 0)),
+                widgetToPreviewY(WidgetPreferences.getOffsetY(this, appWidgetId, "minute", 0))});
         blockOffsets.put("dayNight", new int[]{
-                WidgetPreferences.getDayNightOffsetX(this, appWidgetId, 0),
-                WidgetPreferences.getDayNightOffsetY(this, appWidgetId, 0)});
+                widgetToPreviewX(WidgetPreferences.getDayNightOffsetX(this, appWidgetId, 0)),
+                widgetToPreviewY(WidgetPreferences.getDayNightOffsetY(this, appWidgetId, 0))});
         blockOffsets.put("date", new int[]{
-                WidgetPreferences.getDateOffsetX(this, appWidgetId, 0),
-                WidgetPreferences.getDateOffsetY(this, appWidgetId, 0)});
+                widgetToPreviewX(WidgetPreferences.getDateOffsetX(this, appWidgetId, 0)),
+                widgetToPreviewY(WidgetPreferences.getDateOffsetY(this, appWidgetId, 0))});
         blockOffsets.put("dayOfWeek", new int[]{
-                WidgetPreferences.getDayOfWeekOffsetX(this, appWidgetId, 0),
-                WidgetPreferences.getDayOfWeekOffsetY(this, appWidgetId, 0)});
+                widgetToPreviewX(WidgetPreferences.getDayOfWeekOffsetX(this, appWidgetId, 0)),
+                widgetToPreviewY(WidgetPreferences.getDayOfWeekOffsetY(this, appWidgetId, 0))});
     }
 
     private void updatePreview() {
@@ -637,16 +637,16 @@ public class WidgetConfigureActivity extends Activity {
     private void saveOffsets() {
         WidgetPreferences.saveUseConstructorLayout(this, appWidgetId, true);
 
-        WidgetPreferences.saveOffsetX(this, appWidgetId, "hour", blockOffsets.get("hour")[0]);
-        WidgetPreferences.saveOffsetY(this, appWidgetId, "hour", blockOffsets.get("hour")[1]);
-        WidgetPreferences.saveOffsetX(this, appWidgetId, "minute", blockOffsets.get("minute")[0]);
-        WidgetPreferences.saveOffsetY(this, appWidgetId, "minute", blockOffsets.get("minute")[1]);
-        WidgetPreferences.saveDayNightOffsetX(this, appWidgetId, blockOffsets.get("dayNight")[0]);
-        WidgetPreferences.saveDayNightOffsetY(this, appWidgetId, blockOffsets.get("dayNight")[1]);
-        WidgetPreferences.saveDateOffsetX(this, appWidgetId, blockOffsets.get("date")[0]);
-        WidgetPreferences.saveDateOffsetY(this, appWidgetId, blockOffsets.get("date")[1]);
-        WidgetPreferences.saveDayOfWeekOffsetX(this, appWidgetId, blockOffsets.get("dayOfWeek")[0]);
-        WidgetPreferences.saveDayOfWeekOffsetY(this, appWidgetId, blockOffsets.get("dayOfWeek")[1]);
+        WidgetPreferences.saveOffsetX(this, appWidgetId, "hour", previewToWidgetX(blockOffsets.get("hour")[0]));
+        WidgetPreferences.saveOffsetY(this, appWidgetId, "hour", previewToWidgetY(blockOffsets.get("hour")[1]));
+        WidgetPreferences.saveOffsetX(this, appWidgetId, "minute", previewToWidgetX(blockOffsets.get("minute")[0]));
+        WidgetPreferences.saveOffsetY(this, appWidgetId, "minute", previewToWidgetY(blockOffsets.get("minute")[1]));
+        WidgetPreferences.saveDayNightOffsetX(this, appWidgetId, previewToWidgetX(blockOffsets.get("dayNight")[0]));
+        WidgetPreferences.saveDayNightOffsetY(this, appWidgetId, previewToWidgetY(blockOffsets.get("dayNight")[1]));
+        WidgetPreferences.saveDateOffsetX(this, appWidgetId, previewToWidgetX(blockOffsets.get("date")[0]));
+        WidgetPreferences.saveDateOffsetY(this, appWidgetId, previewToWidgetY(blockOffsets.get("date")[1]));
+        WidgetPreferences.saveDayOfWeekOffsetX(this, appWidgetId, previewToWidgetX(blockOffsets.get("dayOfWeek")[0]));
+        WidgetPreferences.saveDayOfWeekOffsetY(this, appWidgetId, previewToWidgetY(blockOffsets.get("dayOfWeek")[1]));
 
         // Update widget asynchronously for faster UI response
         handler.post(() -> updateWidget());
