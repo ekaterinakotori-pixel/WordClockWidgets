@@ -108,7 +108,7 @@ public class WidgetConfigureActivity extends Activity {
         if (previewContainer == null) return;
 
         int widthDp = 216; // default for 3x1
-        int heightDp = 72;
+        int heightDp = 180; // constructor preview height increased to base mode
 
         if (widgetProviderClass.endsWith("SmallWordClockWidgetProvider")) {
             widthDp = 146; // 2x1
