@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class WidgetConfigureActivity extends Activity {
 
-    private static final float PREVIEW_SCALE = 2f;
+    private static final float PREVIEW_SCALE = 1f;
     private static final int WIDGET_CELLS_WIDTH = 3;
     private static final int WIDGET_CELLS_HEIGHT = 1;
     private static final int CELL_DP = 72;
@@ -116,7 +116,7 @@ public class WidgetConfigureActivity extends Activity {
         int screenWidth = displayMetrics.widthPixels;
         int maxPreviewWidthPx = dpToPx(432); // 6 cells
         int previewWidthPx = Math.min(screenWidth, maxPreviewWidthPx);
-        int previewHeightPx = dpToPx(144); // 2 cells
+        int previewHeightPx = dpToPx(72); // Match widget height
 
         ViewGroup.LayoutParams params = previewContainer.getLayoutParams();
         if (params != null) {
