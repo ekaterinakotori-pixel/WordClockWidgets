@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
-    android:orientation="vertical"
-    android:padding="4dp">
+    android:padding="0dp">
 
     <FrameLayout
         android:id="@+id/widget_border"
@@ -13,58 +12,92 @@
         android:layout_height="match_parent"
         android:background="@drawable/widget_border">
 
-        <LinearLayout
+        <!-- Transparent content container for positioning -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/hour_text"
+            <!-- Hour text wrapper for independent positioning -->
+            <FrameLayout
+                android:id="@+id/hour_wrapper"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Четыре"
-                android:textColor="@android:color/black"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:layout_gravity="center">
+                <TextView
+                    android:id="@+id/hour_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Четыре"
+                    android:textColor="@android:color/black"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
 
-            <TextView
-                android:id="@+id/day_night_text"
+            <!-- Minute text wrapper for independent positioning -->
+            <FrameLayout
+                android:id="@+id/minute_wrapper"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="дня"
-                android:textColor="@android:color/holo_red_dark"
-                android:textSize="18sp" />
+                android:layout_gravity="center">
+                <TextView
+                    android:id="@+id/minute_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Сорок три"
+                    android:textColor="@android:color/black"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
 
-            <TextView
-                android:id="@+id/day_of_week_text"
+            <!-- Day/Night wrapper for independent positioning -->
+            <FrameLayout
+                android:id="@+id/day_night_wrapper"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Понедельник"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:visibility="gone" />
+                android:layout_gravity="center">
+                <TextView
+                    android:id="@+id/day_night_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="дня"
+                    android:textColor="@android:color/holo_red_dark"
+                    android:textSize="18sp" />
+            </FrameLayout>
 
-            <TextView
-                android:id="@+id/date_text"
+            <!-- Date wrapper for independent positioning -->
+            <FrameLayout
+                android:id="@+id/date_wrapper"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Тринадцатое марта"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                android:visibility="gone" />
+                android:layout_gravity="center"
+                android:visibility="gone">
+                <TextView
+                    android:id="@+id/date_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Тринадцатое марта"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp" />
+            </FrameLayout>
 
-            <TextView
-                android:id="@+id/minute_text"
+            <!-- Day of Week wrapper for independent positioning -->
+            <FrameLayout
+                android:id="@+id/day_of_week_wrapper"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Сорок три"
-                android:textColor="@android:color/black"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:layout_gravity="center"
+                android:visibility="gone">
+                <TextView
+                    android:id="@+id/day_of_week_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Понедельник"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
+            </FrameLayout>
 
-        </LinearLayout>
+        </FrameLayout>
 
     </FrameLayout>
 
-</LinearLayout>
+</FrameLayout>

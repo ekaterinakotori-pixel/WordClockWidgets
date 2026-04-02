@@ -25,6 +25,7 @@ public class NumberToWords {
     public static String convertHour(int hour) {
         if (hour == 0 || hour == 12) return "двенадцать";
         if (hour > 12) hour -= 12;
+        if (hour == 1) return "час";
         return hours[hour];
     }
 

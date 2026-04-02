@@ -91,26 +91,26 @@ public abstract class BaseWordClockWidgetProvider extends AppWidgetProvider {
 
         setTexts(views, hourText, minuteText, dayNightText, dayOfWeekText, dateText);
 
-        // Apply offsets using padding approximation
+        // Apply offsets using margin simulation on wrapper elements
         int hourDx = WidgetPreferences.constrainOffset(WidgetPreferences.getOffsetX(context, appWidgetId, "hour", 0));
         int hourDy = WidgetPreferences.constrainOffset(WidgetPreferences.getOffsetY(context, appWidgetId, "hour", 0));
-        applyPadding(views, R.id.hour_text, hourDx, hourDy);
+        applyPaddingToWrapper(views, R.id.hour_wrapper, hourDx, hourDy);
 
         int minuteDx = WidgetPreferences.constrainOffset(WidgetPreferences.getOffsetX(context, appWidgetId, "minute", 0));
         int minuteDy = WidgetPreferences.constrainOffset(WidgetPreferences.getOffsetY(context, appWidgetId, "minute", 0));
-        applyPadding(views, R.id.minute_text, minuteDx, minuteDy);
+        applyPaddingToWrapper(views, R.id.minute_wrapper, minuteDx, minuteDy);
 
         int dayNightDx = WidgetPreferences.constrainOffset(WidgetPreferences.getDayNightOffsetX(context, appWidgetId, 0));
         int dayNightDy = WidgetPreferences.constrainOffset(WidgetPreferences.getDayNightOffsetY(context, appWidgetId, 0));
-        applyPadding(views, R.id.day_night_text, dayNightDx, dayNightDy);
+        applyPaddingToWrapper(views, R.id.day_night_wrapper, dayNightDx, dayNightDy);
 
         int dateDx = WidgetPreferences.constrainOffset(WidgetPreferences.getDateOffsetX(context, appWidgetId, 0));
         int dateDy = WidgetPreferences.constrainOffset(WidgetPreferences.getDateOffsetY(context, appWidgetId, 0));
-        applyPadding(views, R.id.date_text, dateDx, dateDy);
+        applyPaddingToWrapper(views, R.id.date_wrapper, dateDx, dateDy);
 
         int dayOfWeekDx = WidgetPreferences.constrainOffset(WidgetPreferences.getDayOfWeekOffsetX(context, appWidgetId, 0));
         int dayOfWeekDy = WidgetPreferences.constrainOffset(WidgetPreferences.getDayOfWeekOffsetY(context, appWidgetId, 0));
-        applyPadding(views, R.id.day_of_week_text, dayOfWeekDx, dayOfWeekDy);
+        applyPaddingToWrapper(views, R.id.day_of_week_wrapper, dayOfWeekDx, dayOfWeekDy);
 
         int hourColor = WidgetPreferences.getHourTextColor(context, appWidgetId, getDefaultTextColor());
         int minuteColor = WidgetPreferences.getMinuteTextColor(context, appWidgetId, getDefaultTextColor());
@@ -150,12 +150,12 @@ public abstract class BaseWordClockWidgetProvider extends AppWidgetProvider {
         scheduleNextMinute(context);
     }
 
-    private void applyPadding(RemoteViews views, int viewId, int offsetX, int offsetY) {
+    private void applyPaddingToWrapper(RemoteViews views, int wrapperViewId, int offsetX, int offsetY) {
         int left = Math.max(0, offsetX);
         int top = Math.max(0, offsetY);
         int right = Math.max(0, -offsetX);
         int bottom = Math.max(0, -offsetY);
-        views.setViewPadding(viewId, left, top, right, bottom);
+        views.setViewPadding(wrapperViewId, left, top, right, bottom);
     }
 
     // Schedule next update for the next minute at :00 seconds

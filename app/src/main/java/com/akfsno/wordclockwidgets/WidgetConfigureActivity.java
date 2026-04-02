@@ -8,9 +8,11 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Gravity;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ExpandableListView;
+import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -105,15 +107,15 @@ public class WidgetConfigureActivity extends Activity {
     private void setPreviewContainerByProvider() {
         if (previewContainer == null) return;
 
-        int widthDp = 330; // default for 3x1
+        int widthDp = 216; // default for 3x1
         int heightDp = 72;
 
         if (widgetProviderClass.endsWith("SmallWordClockWidgetProvider")) {
-            widthDp = 220; // 2x1
+            widthDp = 146; // 2x1
         } else if (widgetProviderClass.endsWith("WordClockWidgetProvider")) {
-            widthDp = 330; // 3x1
+            widthDp = 216; // 3x1
         } else if (widgetProviderClass.endsWith("LargeWordClockWidgetProvider")) {
-            widthDp = 440; // 4x1
+            widthDp = 288; // 4x1
         }
 
         int newWidth = dpToPx(widthDp);
@@ -194,14 +196,14 @@ public class WidgetConfigureActivity extends Activity {
     }
 
     private void updatePreview() {
-        applyTranslationWithBounds("hour", previewHour);
-        applyTranslationWithBounds("minute", previewMinute);
-        applyTranslationWithBounds("dayNight", previewDayNight);
-        applyTranslationWithBounds("date", previewDate);
-        applyTranslationWithBounds("dayOfWeek", previewDayOfWeek);
+        applyMarginWithBounds("hour", previewHour);
+        applyMarginWithBounds("minute", previewMinute);
+        applyMarginWithBounds("dayNight", previewDayNight);
+        applyMarginWithBounds("date", previewDate);
+        applyMarginWithBounds("dayOfWeek", previewDayOfWeek);
     }
 
-    private void applyTranslationWithBounds(String block, View view) {
+    private void applyMarginWithBounds(String block, View view) {
         int[] off = blockOffsets.get(block);
         if (off == null) return;
 
@@ -209,8 +211,14 @@ public class WidgetConfigureActivity extends Activity {
         off[0] = bounded[0];
         off[1] = bounded[1];
 
-        view.setTranslationX(off[0]);
-        view.setTranslationY(off[1]);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.gravity = Gravity.CENTER;
+        params.leftMargin = bounded[0];
+        params.topMargin = bounded[1];
+        view.setLayoutParams(params);
     }
 
     private int[] constrainOffsetToPreview(View view, int x, int y) {
@@ -246,7 +254,7 @@ public class WidgetConfigureActivity extends Activity {
     private void setupDragAndDrop() {
         View.OnTouchListener dragListener = new View.OnTouchListener() {
             private float startRawX, startRawY;
-            private int startOffsetX, startOffsetY;
+            private int startMarginX, startMarginY;
             private String draggedBlock;
 
             @Override
@@ -259,8 +267,8 @@ public class WidgetConfigureActivity extends Activity {
                         selectedBlock = draggedBlock;
 
                         int[] current = blockOffsets.get(draggedBlock);
-                        startOffsetX = current[0];
-                        startOffsetY = current[1];
+                        startMarginX = current[0];
+                        startMarginY = current[1];
 
                         updateCoordinates();
                         return true;
@@ -268,15 +276,22 @@ public class WidgetConfigureActivity extends Activity {
                         float deltaX = event.getRawX() - startRawX;
                         float deltaY = event.getRawY() - startRawY;
 
-                        int newX = (int) (startOffsetX + deltaX);
-                        int newY = (int) (startOffsetY + deltaY);
+                        int newX = (int) (startMarginX + deltaX);
+                        int newY = (int) (startMarginY + deltaY);
                         int[] bounded = constrainOffsetToPreview(view, newX, newY);
 
                         blockOffsets.get(draggedBlock)[0] = bounded[0];
                         blockOffsets.get(draggedBlock)[1] = bounded[1];
 
-                        view.setTranslationX(bounded[0]);
-                        view.setTranslationY(bounded[1]);
+                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.WRAP_CONTENT,
+                                FrameLayout.LayoutParams.WRAP_CONTENT
+                        );
+                        params.gravity = Gravity.CENTER;
+                        params.leftMargin = bounded[0];
+                        params.topMargin = bounded[1];
+                        view.setLayoutParams(params);
+
                         updateCoordinates();
                         return true;
                     case MotionEvent.ACTION_UP:
@@ -284,8 +299,14 @@ public class WidgetConfigureActivity extends Activity {
                         off[0] = WidgetPreferences.constrainOffset(off[0]);
                         off[1] = WidgetPreferences.constrainOffset(off[1]);
 
-                        view.setTranslationX(off[0]);
-                        view.setTranslationY(off[1]);
+                        FrameLayout.LayoutParams finalParams = new FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.WRAP_CONTENT,
+                                FrameLayout.LayoutParams.WRAP_CONTENT
+                        );
+                        finalParams.gravity = Gravity.CENTER;
+                        finalParams.leftMargin = off[0];
+                        finalParams.topMargin = off[1];
+                        view.setLayoutParams(finalParams);
 
                         return true;
                 }
