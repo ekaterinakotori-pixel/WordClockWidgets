@@ -107,16 +107,9 @@ public class WidgetConfigureActivity extends Activity {
     private void setPreviewContainerByProvider() {
         if (previewContainer == null) return;
 
-        int widthDp = 216; // default for 3x1
-        int heightDp = 180; // constructor preview height increased to base mode
-
-        if (widgetProviderClass.endsWith("SmallWordClockWidgetProvider")) {
-            widthDp = 146; // 2x1
-        } else if (widgetProviderClass.endsWith("LargeWordClockWidgetProvider")) {
-            widthDp = 288; // 4x1
-        } else if (widgetProviderClass.endsWith("WordClockWidgetProvider")) {
-            widthDp = 216; // 3x1
-        }
+        // Preview in constructor should always look like the base style (3x1 preview size)
+        int widthDp = 216; // 3x1 preview width
+        int heightDp = 180; // base bounding height
 
         int newWidth = dpToPx(widthDp);
         int newHeight = dpToPx(heightDp);

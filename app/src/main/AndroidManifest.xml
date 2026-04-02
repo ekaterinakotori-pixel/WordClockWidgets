@@ -33,16 +33,6 @@
                 android:resource="@xml/word_clock_widget_info" />
         </receiver>
 
-        <receiver android:name=".LargeWordClockWidgetProvider"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/word_clock_widget_large_info" />
-        </receiver>
-
         <receiver android:name=".SmallWordClockWidgetProvider"
             android:exported="true">
             <intent-filter>

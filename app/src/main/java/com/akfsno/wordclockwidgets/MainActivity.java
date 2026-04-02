@@ -27,9 +27,9 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(MainActivity.this);
-                int[] widgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(MainActivity.this, WordClockWidgetProvider.class));
+                int[] widgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(MainActivity.this, SmallWordClockWidgetProvider.class));
                 if (widgetIds.length == 0) {
-                    widgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(MainActivity.this, LargeWordClockWidgetProvider.class));
+                    widgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(MainActivity.this, WordClockWidgetProvider.class));
                 }
 
                 if (widgetIds.length > 0) {
