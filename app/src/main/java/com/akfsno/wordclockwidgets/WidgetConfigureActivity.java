@@ -28,8 +28,8 @@ public class WidgetConfigureActivity extends Activity {
 
     private static final int REAL_WIDGET_DP_WIDTH = 210;
     private static final int REAL_WIDGET_DP_HEIGHT = 70;
-    private static final int CONSTRUCTOR_PREVIEW_DP_WIDTH = 420;
-    private static final int CONSTRUCTOR_PREVIEW_DP_HEIGHT = 140;
+    private static final int CONSTRUCTOR_PREVIEW_DP_WIDTH = 420;  // 2x real width for 2:1 ratio
+    private static final int CONSTRUCTOR_PREVIEW_DP_HEIGHT = 140; // 2x real height for 2:1 ratio
 
     private static final int GRID_COLUMNS = 6;
     private static final int GRID_ROWS = 2;
@@ -145,10 +145,17 @@ public class WidgetConfigureActivity extends Activity {
 
         android.util.DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         int screenWidth = displayMetrics.widthPixels;
-        int requiredWidthPx = dpToPx(CONSTRUCTOR_PREVIEW_DP_WIDTH);
-        int previewWidthPx = Math.min(screenWidth, requiredWidthPx);
-        int previewHeightPx = dpToPx(CONSTRUCTOR_PREVIEW_DP_HEIGHT);
-
+        
+        // Calculate exact 6x2 grid dimensions with borders
+        int cellWidthPx = dpToPx(REAL_WIDGET_DP_WIDTH) / GRID_COLUMNS;  // Each cell is real_widget_width / 6
+        int cellHeightPx = dpToPx(REAL_WIDGET_DP_HEIGHT) / GRID_ROWS;   // Each cell is real_widget_height / 2
+        
+        int previewWidthPx = cellWidthPx * GRID_COLUMNS;   // 6 cells wide
+        int previewHeightPx = cellHeightPx * GRID_ROWS;    // 2 cells high
+        
+        // Ensure it fits on screen
+        previewWidthPx = Math.min(screenWidth - dpToPx(32), previewWidthPx); // Leave some margin
+        
         previewPixelWidth = previewWidthPx;
         previewPixelHeight = previewHeightPx;
 
@@ -185,32 +192,74 @@ public class WidgetConfigureActivity extends Activity {
         int cellWidth = previewPixelWidth / GRID_COLUMNS;
         int cellHeight = previewPixelHeight / GRID_ROWS;
 
-        int lineColor = 0x55FF0000; // semi-transparent red
+        int lineColor = 0xFF000000; // Black for grid lines (more visible)
+        int borderWidth = dpToPx(2); // Thicker border lines
+
+        // Add border around entire preview (outer border)
+        View borderTop = new View(this);
+        borderTop.setBackgroundColor(lineColor);
+        borderTop.setTag("grid_line");
+        FrameLayout.LayoutParams lpTop = new FrameLayout.LayoutParams(previewPixelWidth, borderWidth);
+        lpTop.leftMargin = 0;
+        lpTop.topMargin = 0;
+        borderTop.setLayoutParams(lpTop);
+        container.addView(borderTop);
+
+        View borderBottom = new View(this);
+        borderBottom.setBackgroundColor(lineColor);
+        borderBottom.setTag("grid_line");
+        FrameLayout.LayoutParams lpBottom = new FrameLayout.LayoutParams(previewPixelWidth, borderWidth);
+        lpBottom.leftMargin = 0;
+        lpBottom.topMargin = previewPixelHeight - borderWidth;
+        borderBottom.setLayoutParams(lpBottom);
+        container.addView(borderBottom);
+
+        View borderLeft = new View(this);
+        borderLeft.setBackgroundColor(lineColor);
+        borderLeft.setTag("grid_line");
+        FrameLayout.LayoutParams lpLeft = new FrameLayout.LayoutParams(borderWidth, previewPixelHeight);
+        lpLeft.leftMargin = 0;
+        lpLeft.topMargin = 0;
+        borderLeft.setLayoutParams(lpLeft);
+        container.addView(borderLeft);
+
+        View borderRight = new View(this);
+        borderRight.setBackgroundColor(lineColor);
+        borderRight.setTag("grid_line");
+        FrameLayout.LayoutParams lpRight = new FrameLayout.LayoutParams(borderWidth, previewPixelHeight);
+        lpRight.leftMargin = previewPixelWidth - borderWidth;
+        lpRight.topMargin = 0;
+        borderRight.setLayoutParams(lpRight);
+        container.addView(borderRight);
+
+        // Add inner grid lines
+        int innerLineColor = 0xFF666666; // Gray for inner grid lines
+        int innerLineWidth = dpToPx(1);
 
         for (int x = 1; x < GRID_COLUMNS; x++) {
             View line = new View(this);
-            line.setBackgroundColor(lineColor);
+            line.setBackgroundColor(innerLineColor);
             line.setTag("grid_line");
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                    Math.max(1, dpToPx(1)),
-                    previewPixelHeight
+                    innerLineWidth,
+                    previewPixelHeight - 2 * borderWidth
             );
-            lp.leftMargin = x * cellWidth;
-            lp.topMargin = 0;
+            lp.leftMargin = x * cellWidth - innerLineWidth / 2;
+            lp.topMargin = borderWidth;
             line.setLayoutParams(lp);
             container.addView(line);
         }
 
         for (int y = 1; y < GRID_ROWS; y++) {
             View line = new View(this);
-            line.setBackgroundColor(lineColor);
+            line.setBackgroundColor(innerLineColor);
             line.setTag("grid_line");
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                    previewPixelWidth,
-                    Math.max(1, dpToPx(1))
+                    previewPixelWidth - 2 * borderWidth,
+                    innerLineWidth
             );
-            lp.leftMargin = 0;
-            lp.topMargin = y * cellHeight;
+            lp.leftMargin = borderWidth;
+            lp.topMargin = y * cellHeight - innerLineWidth / 2;
             line.setLayoutParams(lp);
             container.addView(line);
         }
@@ -321,7 +370,7 @@ public class WidgetConfigureActivity extends Activity {
                 widgetToPreviewY(WidgetPreferences.getDayOfWeekOffsetY(this, appWidgetId, 0))});
     }
 
-    private void updatePreview() {
+    public void updatePreview() {
         View rootView = findViewById(R.id.widget_preview_container);
         BaseWordClockWidgetProvider.updateLocalWidgetView(this, rootView, appWidgetId);
 
@@ -384,11 +433,12 @@ public class WidgetConfigureActivity extends Activity {
             return new int[]{boundedX, boundedY};
         }
 
-        // Allow full freedom in constructor preview, no constraining
-        int maxX = Integer.MAX_VALUE / 2;
-        int minX = Integer.MIN_VALUE / 2;
-        int maxY = Integer.MAX_VALUE / 2;
-        int minY = Integer.MIN_VALUE / 2;
+        // Constrain elements within preview bounds (with some margin for text)
+        int margin = dpToPx(4); // Small margin to prevent text cutoff
+        int maxX = (containerW - viewW) / 2 - margin;
+        int minX = -(containerW - viewW) / 2 + margin;
+        int maxY = (containerH - viewH) / 2 - margin;
+        int minY = -(containerH - viewH) / 2 + margin;
 
         int boundedX = Math.max(minX, Math.min(maxX, x));
         int boundedY = Math.max(minY, Math.min(maxY, y));
@@ -737,6 +787,19 @@ public class WidgetConfigureActivity extends Activity {
         updatePreview();
         updateCoordinates();
         saveOffsets();
+        
+        // Clear error indicators
+        if (previewContainer instanceof FrameLayout) {
+            FrameLayout container = (FrameLayout) previewContainer;
+            for (int i = container.getChildCount() - 1; i >= 0; i--) {
+                View child = container.getChildAt(i);
+                Object tag = child.getTag();
+                if (tag != null && tag.toString().startsWith("error_indicator")) {
+                    container.removeViewAt(i);
+                }
+            }
+        }
+        
         Toast.makeText(this, "Сброшено", Toast.LENGTH_SHORT).show();
     }
 

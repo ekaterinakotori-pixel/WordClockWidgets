@@ -312,10 +312,11 @@ public abstract class BaseWordClockWidgetProvider extends AppWidgetProvider {
     }
 
     private void applyPaddingToWrapper(RemoteViews views, int wrapperViewId, int offsetX, int offsetY) {
-        int left = Math.max(0, offsetX);
-        int top = Math.max(0, offsetY);
-        int right = Math.max(0, -offsetX);
-        int bottom = Math.max(0, -offsetY);
+        // Allow negative padding to enable elements to be positioned at widget edges and beyond
+        int left = offsetX;
+        int top = offsetY;
+        int right = -offsetX;
+        int bottom = -offsetY;
         views.setViewPadding(wrapperViewId, left, top, right, bottom);
     }
 

@@ -332,6 +332,10 @@ public class BlockAdapter extends BaseExpandableListAdapter {
                 }
                 valueText.setText(newValue ? "Скрыть" : "Показать");
                 updateWidget();
+                // Update preview to reflect visibility changes
+                if (context instanceof WidgetConfigureActivity) {
+                    ((WidgetConfigureActivity) context).updatePreview();
+                }
             });
         } else {
             seekBar.setVisibility(View.GONE);
