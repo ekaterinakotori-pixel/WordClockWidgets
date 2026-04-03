@@ -1,4 +1,4 @@
-package com.akfsno.wordclockwidgets;
+чгpackage com.akfsno.wordclockwidgets;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
