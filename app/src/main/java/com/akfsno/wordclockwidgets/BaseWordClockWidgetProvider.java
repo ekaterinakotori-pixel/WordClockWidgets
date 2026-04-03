@@ -248,6 +248,11 @@ public abstract class BaseWordClockWidgetProvider extends AppWidgetProvider {
             dayOfWeekWrapper.setVisibility(showDayOfWeek ? android.view.View.VISIBLE : android.view.View.GONE);
         }
 
+        android.view.View dotWrapper = rootView.findViewById(R.id.dot_wrapper);
+        if (dotWrapper != null) {
+            dotWrapper.setVisibility(android.view.View.GONE); // only for constructor debugging
+        }
+
         int hourDx = 0;
         int hourDy = 0;
         int minuteDx = 0;

@@ -40,7 +40,7 @@ public class WidgetConfigureActivity extends Activity {
     private int appWidgetId;
     private ExpandableListView blockList;
     private View previewContainer;
-    private View hourWrapper, minuteWrapper, dayNightWrapper, dateWrapper, dayOfWeekWrapper;
+    private View hourWrapper, minuteWrapper, dayNightWrapper, dateWrapper, dayOfWeekWrapper, dotWrapper;
     private TextView previewHour, previewMinute, previewDayNight, previewDate, previewDayOfWeek;
     private Button joystickUp, joystickDown, joystickLeft, joystickRight;
     private TextView coordinates;
@@ -125,6 +125,7 @@ public class WidgetConfigureActivity extends Activity {
         dayNightWrapper = findViewById(R.id.day_night_wrapper);
         dateWrapper = findViewById(R.id.date_wrapper);
         dayOfWeekWrapper = findViewById(R.id.day_of_week_wrapper);
+        dotWrapper = findViewById(R.id.dot_wrapper);
 
         previewHour = findViewById(R.id.hour_text);
         previewMinute = findViewById(R.id.minute_text);
@@ -307,6 +308,7 @@ public class WidgetConfigureActivity extends Activity {
         groups.add("День/Ночь");
         groups.add("Дата");
         groups.add("День недели");
+        groups.add("Отладка");
 
         Map<String, List<String>> children = new HashMap<>();
         List<String> generalChildren = new ArrayList<>();
@@ -348,6 +350,7 @@ public class WidgetConfigureActivity extends Activity {
             case 3: return "dayNight";
             case 4: return "date";
             case 5: return "dayOfWeek";
+            case 6: return "dot";
             default: return "hour";
         }
     }
@@ -368,11 +371,19 @@ public class WidgetConfigureActivity extends Activity {
         blockOffsets.put("dayOfWeek", new int[]{
                 widgetToPreviewX(WidgetPreferences.getDayOfWeekOffsetX(this, appWidgetId, 0)),
                 widgetToPreviewY(WidgetPreferences.getDayOfWeekOffsetY(this, appWidgetId, 0))});
+
+        blockOffsets.put("dot", new int[]{
+                widgetToPreviewX(WidgetPreferences.getOffsetX(this, appWidgetId, "dot", 0)),
+                widgetToPreviewY(WidgetPreferences.getOffsetY(this, appWidgetId, "dot", 0))});
     }
 
     public void updatePreview() {
         View rootView = findViewById(R.id.widget_preview_container);
         BaseWordClockWidgetProvider.updateLocalWidgetView(this, rootView, appWidgetId);
+
+        if (dotWrapper != null) {
+            dotWrapper.setVisibility(View.VISIBLE);
+        }
 
         // Apply current constructor offsets to wrappers (interactive drag)
         applyTranslationWithBounds("hour", hourWrapper);
@@ -380,6 +391,7 @@ public class WidgetConfigureActivity extends Activity {
         applyTranslationWithBounds("dayNight", dayNightWrapper);
         applyTranslationWithBounds("date", dateWrapper);
         applyTranslationWithBounds("dayOfWeek", dayOfWeekWrapper);
+        applyTranslationWithBounds("dot", dotWrapper);
 
         // Update error indicators after applying translations
         if (previewContainer instanceof FrameLayout) {
@@ -521,6 +533,7 @@ public class WidgetConfigureActivity extends Activity {
         if (dayNightWrapper != null) dayNightWrapper.setOnTouchListener(dragListener);
         if (dateWrapper != null) dateWrapper.setOnTouchListener(dragListener);
         if (dayOfWeekWrapper != null) dayOfWeekWrapper.setOnTouchListener(dragListener);
+        if (dotWrapper != null) dotWrapper.setOnTouchListener(dragListener);
     }
 
     private String getBlockFromView(View view) {
@@ -529,6 +542,7 @@ public class WidgetConfigureActivity extends Activity {
         if (view == dayNightWrapper) return "dayNight";
         if (view == dateWrapper) return "date";
         if (view == dayOfWeekWrapper) return "dayOfWeek";
+        if (view == dotWrapper) return "dot";
         return "hour";
     }
 
@@ -553,6 +567,7 @@ public class WidgetConfigureActivity extends Activity {
             case "dayNight": return dayNightWrapper;
             case "date": return dateWrapper;
             case "dayOfWeek": return dayOfWeekWrapper;
+            case "dot": return dotWrapper;
             default: return hourWrapper;
         }
     }
@@ -560,15 +575,15 @@ public class WidgetConfigureActivity extends Activity {
     private void updateCoordinates() {
         int[] off = blockOffsets.get(selectedBlock);
 
-        // Coordinates are stored in pixel units and displayed as-is
+        // Coordinates are stored relative to center of preview (0,0=center)
         int displayX = off[0];
         int displayY = off[1];
 
-        // Calculate grid cell (6 columns x 2 rows) from edge-based coordinates
+        // Calculate grid cell (6 columns x 2 rows) from center-based coordinates
         float cellWidth = previewPixelWidth / 6f;
         float cellHeight = previewPixelHeight / 2f;
-        float xForGrid = off[0] >= 0 ? off[0] : previewPixelWidth + off[0];
-        float yForGrid = off[1] >= 0 ? off[1] : previewPixelHeight + off[1];
+        float xForGrid = (off[0] + previewPixelWidth / 2f);
+        float yForGrid = (off[1] + previewPixelHeight / 2f);
         int col = (int) (xForGrid / cellWidth);
         int row = (int) (yForGrid / cellHeight);
 
@@ -576,15 +591,15 @@ public class WidgetConfigureActivity extends Activity {
         col = Math.max(0, Math.min(5, col));
         row = Math.max(0, Math.min(1, row));
 
-        String horizontalEdgeDesc = off[0] >= 0 ? String.format("left=%d", off[0]) : String.format("right=%d", -off[0]);
-        String verticalEdgeDesc = off[1] >= 0 ? String.format("top=%d", off[1]) : String.format("bottom=%d", -off[1]);
+        String horizontalDesc = off[0] >= 0 ? String.format("right=%d", off[0]) : String.format("left=%d", -off[0]);
+        String verticalDesc = off[1] >= 0 ? String.format("down=%d", off[1]) : String.format("up=%d", -off[1]);
 
         // Check for errors
-        boolean isOutOfBounds = Math.abs(off[0]) > previewPixelWidth / 2 || Math.abs(off[1]) > previewPixelHeight / 2;
+        boolean isOutOfBounds = Math.abs(off[0]) > previewPixelWidth / 2f || Math.abs(off[1]) > previewPixelHeight / 2f;
         String errorText = isOutOfBounds ? " ⚠️ ВНЕ ГРАНИЦ!" : "";
 
-        coordinates.setText(String.format("Grid[%d,%d] | Offset(%d,%d) | %s | %s%s",
-            col, row, displayX, displayY, horizontalEdgeDesc, verticalEdgeDesc, errorText));
+        coordinates.setText(String.format("%s | Grid[%d,%d] | Offset(%d,%d) | %s | %s%s",
+            selectedBlock, col, row, displayX, displayY, horizontalDesc, verticalDesc, errorText));
     }
 
     private void setupGeneralControls() {
@@ -738,6 +753,9 @@ public class WidgetConfigureActivity extends Activity {
         WidgetPreferences.saveDayOfWeekOffsetX(this, appWidgetId, previewToWidgetX(blockOffsets.get("dayOfWeek")[0]));
         WidgetPreferences.saveDayOfWeekOffsetY(this, appWidgetId, previewToWidgetY(blockOffsets.get("dayOfWeek")[1]));
 
+        WidgetPreferences.saveOffsetX(this, appWidgetId, "dot", previewToWidgetX(blockOffsets.get("dot")[0]));
+        WidgetPreferences.saveOffsetY(this, appWidgetId, "dot", previewToWidgetY(blockOffsets.get("dot")[1]));
+
         // Update widget asynchronously for faster UI response
         handler.post(() -> updateWidget());
 
@@ -763,6 +781,7 @@ public class WidgetConfigureActivity extends Activity {
             blockOffsets.get(key)[0] = 0;
             blockOffsets.get(key)[1] = 0;
         }
+        blockOffsets.put("dot", new int[]{0, 0});
         WidgetPreferences.saveUse12HourFormat(this, appWidgetId, true);
         WidgetPreferences.saveBackgroundColor(this, appWidgetId, 0xFFFFFFFF);
         WidgetPreferences.saveBackgroundAlpha(this, appWidgetId, 255);
