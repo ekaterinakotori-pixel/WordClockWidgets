@@ -211,6 +211,70 @@ jobs:
             echo "⚠️  Warning: Executable binary not found (may be embedded)"
           fi
           
+          # Extract and verify app bundle
+          echo "=== Extracting and verifying app bundle ==="
+          mkdir -p verify_app
+          unzip -q "$IPA_FILE" -d verify_app
+          
+          if [ -d "verify_app/Payload/$PRODUCT_NAME.app" ]; then
+            echo "✅ App bundle extracted successfully"
+            
+            # Check Info.plist values
+            if [ -f "verify_app/Payload/$PRODUCT_NAME.app/Info.plist" ]; then
+              echo "=== Checking Info.plist values ==="
+              # Use plutil if available, otherwise basic check
+              if command -v plutil >/dev/null 2>&1; then
+                BUNDLE_ID=$(plutil -extract CFBundleIdentifier raw verify_app/Payload/$PRODUCT_NAME.app/Info.plist 2>/dev/null)
+                EXECUTABLE=$(plutil -extract CFBundleExecutable raw verify_app/Payload/$PRODUCT_NAME.app/Info.plist 2>/dev/null)
+                PACKAGE_TYPE=$(plutil -extract CFBundlePackageType raw verify_app/Payload/$PRODUCT_NAME.app/Info.plist 2>/dev/null)
+                
+                echo "Bundle ID: $BUNDLE_ID"
+                echo "Executable: $EXECUTABLE"
+                echo "Package Type: $PACKAGE_TYPE"
+                
+                if [ "$BUNDLE_ID" = "com.wordclockwidgets.app" ] && [ "$EXECUTABLE" = "WordClockWidgets" ] && [ "$PACKAGE_TYPE" = "APPL" ]; then
+                  echo "✅ Info.plist values are correct"
+                else
+                  echo "❌ Info.plist values are incorrect"
+                  exit 1
+                fi
+              else
+                echo "⚠️  plutil not available, skipping detailed Info.plist check"
+              fi
+            fi
+            
+            # Check executable permissions and type
+            if [ -f "verify_app/Payload/$PRODUCT_NAME.app/$PRODUCT_NAME" ]; then
+              echo "=== Checking executable ==="
+              ls -lh verify_app/Payload/$PRODUCT_NAME.app/$PRODUCT_NAME
+              file verify_app/Payload/$PRODUCT_NAME.app/$PRODUCT_NAME
+              
+              # Check if executable has proper permissions
+              if [ -x "verify_app/Payload/$PRODUCT_NAME.app/$PRODUCT_NAME" ]; then
+                echo "✅ Executable has correct permissions"
+              else
+                echo "⚠️  Executable missing execute permissions"
+              fi
+            fi
+            
+            # Check for code signature (even if unsigned)
+            echo "=== Checking code signature ==="
+            if codesign -v verify_app/Payload/$PRODUCT_NAME.app 2>&1 | grep -q "code object is not signed"; then
+              echo "✅ App is unsigned (expected for development builds)"
+            elif codesign -v verify_app/Payload/$PRODUCT_NAME.app >/dev/null 2>&1; then
+              echo "✅ App is properly signed"
+            else
+              echo "⚠️  Code signature check failed"
+            fi
+            
+          else
+            echo "❌ App bundle not found in IPA"
+            exit 1
+          fi
+          
+          # Clean up
+          rm -rf verify_app
+          
           echo ""
           echo "✅ IPA verification passed"
       
