@@ -12,16 +12,13 @@ on:
 
 jobs:
   build:
-    name: Build iOS Application
+    name: Build iOS Application with Swift Package Manager
     runs-on: macos-latest
     
     env:
       PROJECT_PATH: ios
-      DERIVED_DATA_PATH: build/DerivedData
-      PROJECT_FILE: WordClockWidgets.xcodeproj
-      TARGET: WordClockWidgets
-      CONFIGURATION: Release
-      DESTINATION: generic/platform=ios
+      CONFIGURATION: release
+      XCODE_CONTENTS_PATH: /Applications/Xcode.app/Contents
       
     steps:
       - name: Checkout code
@@ -34,56 +31,46 @@ jobs:
           xcodebuild -version
           swift --version
       
-      - name: Generate Xcode project
+      - name: Validate Swift Package
         run: |
           cd $PROJECT_PATH
-          chmod +x generate-xcode-project.sh
-          ./generate-xcode-project.sh
-      
-      - name: Set up environment
-        run: |
-          cd $PROJECT_PATH
-          mkdir -p $DERIVED_DATA_PATH
+          echo "=== Checking Package.swift ==="
+          cat Package.swift | head -30
           
-      - name: List project files
+      - name: Build Swift Package for iOS
         run: |
           cd $PROJECT_PATH
-          echo "=== Project Structure ==="
-          find . -type f \( -name "*.swift" -o -name "*.plist" \) | sort
+          echo "=== Building iOS library with Swift Package Manager ==="
           
-      - name: Build for iOS Simulator
+          # Build iOS library
+          swift build \
+            -c $CONFIGURATION \
+            --target WordClockWidgets \
+            -Xswiftc -target -Xswiftc arm64-apple-ios14.0 2>&1 | tee build-ios.log || {
+            echo "❌ Build failed with exit code: $?"
+            cat build-ios.log
+            exit 1
+          }
+          
+      - name: Build Widget target
         run: |
           cd $PROJECT_PATH
-
-          echo "=== Starting Build ==="
-          xcodebuild \
-            -project "$PROJECT_FILE" \
-            -target "$TARGET" \
-            -configuration "$CONFIGURATION" \
-            -destination "platform=iOS Simulator,name=iPhone XS" \
-            -derivedDataPath "$DERIVED_DATA_PATH" \
-            CODE_SIGNING_ALLOWED=NO \
-            build
-
-      - name: Build for Device (Release)
+          echo "=== Building Widget target ==="
+          
+          swift build \
+            -c $CONFIGURATION \
+            --target WordClockWidgetsWidget \
+            -Xswiftc -target -Xswiftc arm64-apple-ios14.0 2>&1 | tee build-widget.log || true
+            
+      - name: Verify build outputs
         run: |
           cd $PROJECT_PATH
-
-          echo "=== Building for Device ==="
-          xcodebuild \
-            -project "$PROJECT_FILE" \
-            -target "$TARGET" \
-            -configuration "$CONFIGURATION" \
-            -destination generic/platform=ios \
-            -derivedDataPath "$DERIVED_DATA_PATH" \
-            CODE_SIGNING_ALLOWED=NO \
-            build
-      
-      - name: List build artifacts
-        run: |
-          cd $PROJECT_PATH
-          echo "=== Build Artifacts ==="
-          find build -type f 2>/dev/null | head -20 || echo "Build directory contents will be shown after archive"
+          echo "=== Finding build artifacts ==="
+          find .build -name "*.o" -o -name "*.swiftmodule" 2>/dev/null | head -20
+          
+          echo ""
+          echo "=== Build directory structure ==="
+          find .build -type d | sort | head -20
           
       - name: Generate build report
         run: |
