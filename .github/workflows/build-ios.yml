@@ -136,111 +136,38 @@ jobs:
       - name: Create installation guide
         run: |
           cd $PROJECT_PATH
-          
           mkdir -p build/install
           
-          cat > build/install/INSTALL_INSTRUCTIONS.md << 'INSTALL_EOF'
-# How to Install WordClockWidgets on iPhone XS
-
-## 📱 Installation Methods
-
-### Method 1: Using Xcode (Recommended)
-
-1. **Download the artifact** from GitHub Actions
-   - Go to: https://github.com/ideoma-last/WordClockWidgets/actions
-   - Click latest build
-   - Download `wordclockwidgets-ipa` artifact
-   - Extract the ZIP file
-   - You now have `WordClockWidgets.ipa` file
-
-2. **Open Xcode**
-   ```bash
-   cd ios/
-   open WordClockWidgets.xcodeproj
-   ```
-
-3. **Connect iPhone XS** via USB cable to Mac
-
-4. **Trust the computer**: On your iPhone, tap "Trust" when prompted
-
-5. **Select device in Xcode**
-   - Top toolbar, find device dropdown
-   - Select your iPhone XS
-
-6. **Install the app**
-   - Option A: Press Cmd+R to build and install
-   - Option B: Drag IPA file to Xcode window
-   - Option C: Product → Run
-
-7. **Trust the developer certificate** (if needed)
-   - iPhone: Settings → General → VPN & Device Management
-   - Tap developer name
-   - Tap "Trust [Name]"
-
-### Method 2: Using Apple Configurator 2
-
-1. **Download Apple Configurator 2** from Mac App Store
-
-2. **Download the .ipa file** from GitHub Actions artifact
-
-3. **Connect iPhone XS** via USB
-
-4. **Open Apple Configurator 2**
-
-5. **Drag IPA file to device**
-   - Drag `WordClockWidgets.ipa` onto your iPhone's icon
-   - Confirm when prompted
-
-6. **Wait for installation** to complete (usually 1-2 minutes)
-
-### Method 3: Using iMazing
-
-1. **Download iMazing** from Mac App Store (free or paid version)
-
-2. **Download the .ipa file** from GitHub Actions artifact
-
-3. **Connect iPhone XS** via USB
-
-4. **Open iMazing**
-
-5. **Click on installed apps section**
-
-6. **Click "Install app" button**
-   - Select the `WordClockWidgets.ipa` file
-   - Click "Install"
-
-7. **Wait for installation** to complete
-
-## 🔧 Troubleshooting
-
-### Error: "Untrusted Developer"
-**Solution:**
-- iPhone: Settings → General → VPN & Device Management
-- Tap your Apple ID or developer name
-- Tap "Trust" button
-
-### Error: "Installation Failed"
-**Solutions:**
-1. Disconnect and reconnect iPhone
-2. Restart iPhone
-3. Restart Xcode
-4. Try a different USB cable
-5. Update iOS to latest version
-
-### Error: "Cannot find Device"
-**Solutions:**
-1. Unlock iPhone
-2. Tap "Trust" when prompted on device
-3. Restart Xcode
-4. Check cable is properly connected
-
-### App won't launch after install
-- App requires code signing
-- Try reinstalling with Xcode method
-INSTALL_EOF
-
+          echo "=== Creating installation instructions ==="
+          echo "Installation Guide" > build/install/INSTALL_INSTRUCTIONS.md
+          echo "" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "# WordClockWidgets iOS App Installation" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "## Methods to Install" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "### 1. Using Xcode (Recommended)" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- Connect iPhone XS with USB cable" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- Open: cd ios && open WordClockWidgets.xcodeproj" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- Select your device in Xcode" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- Press Cmd+R to install and run" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "### 2. Using Apple Configurator 2" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- Download from Mac App Store" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- Drag .ipa file to device icon" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- Confirm installation" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "### 3. Using iMazing" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- Download from Mac App Store" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- Use 'Install app' feature" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- Select the .ipa file" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "## System Requirements" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- iPhone XS or newer" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- iOS 14.0 or later" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "- 50MB free storage" >> build/install/INSTALL_INSTRUCTIONS.md
+          echo "" >> build/install/INSTALL_INSTRUCTIONS.md
           echo "✅ Installation guide created"
-          ls -lh build/install/
+          cat build/install/INSTALL_INSTRUCTIONS.md
       
       - name: Upload IPA for download
         uses: actions/upload-artifact@v4
