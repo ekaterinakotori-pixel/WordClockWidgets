@@ -279,6 +279,9 @@ public class BlockAdapter extends BaseExpandableListAdapter {
                     valueText.setText(String.valueOf((int) size));
                     setFontSize(blockKey, size);
                     updateWidget();
+                    if (context instanceof WidgetConfigureActivity) {
+                        ((WidgetConfigureActivity) context).updatePreview();
+                    }
                 }
 
                 @Override
