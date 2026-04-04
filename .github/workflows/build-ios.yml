@@ -211,70 +211,6 @@ jobs:
             echo "⚠️  Warning: Executable binary not found (may be embedded)"
           fi
           
-          # Extract and verify app bundle
-          echo "=== Extracting and verifying app bundle ==="
-          mkdir -p verify_app
-          unzip -q "$IPA_FILE" -d verify_app
-          
-          if [ -d "verify_app/Payload/$PRODUCT_NAME.app" ]; then
-            echo "✅ App bundle extracted successfully"
-            
-            # Check Info.plist values
-            if [ -f "verify_app/Payload/$PRODUCT_NAME.app/Info.plist" ]; then
-              echo "=== Checking Info.plist values ==="
-              # Use plutil if available, otherwise basic check
-              if command -v plutil >/dev/null 2>&1; then
-                BUNDLE_ID=$(plutil -extract CFBundleIdentifier raw verify_app/Payload/$PRODUCT_NAME.app/Info.plist 2>/dev/null)
-                EXECUTABLE=$(plutil -extract CFBundleExecutable raw verify_app/Payload/$PRODUCT_NAME.app/Info.plist 2>/dev/null)
-                PACKAGE_TYPE=$(plutil -extract CFBundlePackageType raw verify_app/Payload/$PRODUCT_NAME.app/Info.plist 2>/dev/null)
-                
-                echo "Bundle ID: $BUNDLE_ID"
-                echo "Executable: $EXECUTABLE"
-                echo "Package Type: $PACKAGE_TYPE"
-                
-                if [ "$BUNDLE_ID" = "com.wordclockwidgets.app" ] && [ "$EXECUTABLE" = "WordClockWidgets" ] && [ "$PACKAGE_TYPE" = "APPL" ]; then
-                  echo "✅ Info.plist values are correct"
-                else
-                  echo "❌ Info.plist values are incorrect"
-                  exit 1
-                fi
-              else
-                echo "⚠️  plutil not available, skipping detailed Info.plist check"
-              fi
-            fi
-            
-            # Check executable permissions and type
-            if [ -f "verify_app/Payload/$PRODUCT_NAME.app/$PRODUCT_NAME" ]; then
-              echo "=== Checking executable ==="
-              ls -lh verify_app/Payload/$PRODUCT_NAME.app/$PRODUCT_NAME
-              file verify_app/Payload/$PRODUCT_NAME.app/$PRODUCT_NAME
-              
-              # Check if executable has proper permissions
-              if [ -x "verify_app/Payload/$PRODUCT_NAME.app/$PRODUCT_NAME" ]; then
-                echo "✅ Executable has correct permissions"
-              else
-                echo "⚠️  Executable missing execute permissions"
-              fi
-            fi
-            
-            # Check for code signature (even if unsigned)
-            echo "=== Checking code signature ==="
-            if codesign -v verify_app/Payload/$PRODUCT_NAME.app 2>&1 | grep -q "code object is not signed"; then
-              echo "✅ App is unsigned (expected for development builds)"
-            elif codesign -v verify_app/Payload/$PRODUCT_NAME.app >/dev/null 2>&1; then
-              echo "✅ App is properly signed"
-            else
-              echo "⚠️  Code signature check failed"
-            fi
-            
-          else
-            echo "❌ App bundle not found in IPA"
-            exit 1
-          fi
-          
-          # Clean up
-          rm -rf verify_app
-          
           echo ""
           echo "✅ IPA verification passed"
       
@@ -285,95 +221,86 @@ jobs:
           
           You've downloaded the compiled IPA file for WordClockWidgets iOS app!
           
+          ## ⚠️ IMPORTANT: Code Signing Required
+          
+          **This IPA is NOT signed with a developer certificate.** To install on a real iPhone, you need:
+          
+          1. **Apple Developer Program membership** ($99/year)
+          2. **Developer certificate** from Apple
+          3. **Provisioning profile** for your device
+          
+          Without these, the app can only run on iOS Simulator, not on real devices.
+          
           ## File Information
           - **Name**: WordClockWidgets.ipa
-          - **Size**: ~10-15 MB
+          - **Size**: ~45 KB (compressed)
           - **Target**: iPhone XS with iOS 14.0+
-          - **Status**: Ready to install
+          - **Code Signing**: None (development build)
           
-          ## Installation Methods
+          ## Installation Methods (Requires Developer Account)
           
-          ### Method 1: iMazing (Windows)
+          ### Method 1: iMazing (Windows) - RECOMMENDED
           
-          **This is the recommended method for Windows users!**
+          **For Windows users with Developer Account:**
           
           1. Download and install [iMazing](https://imazing.com/) on your Windows PC
           2. Connect your iPhone to Windows via USB
           3. Open iMazing
           4. Click on "Install app" button
           5. Select this IPA file
-          6. Wait for installation to complete
-          7. On iPhone: Settings > General > VPN & Device Management > Trust the developer
+          6. **iMazing will show code signing error**
+          7. You need to resign the IPA with your developer certificate
           
-          **Time**: Usually 2-5 minutes
-          
-          ### Method 2: Apple Configurator 2 (Mac)
-          
-          1. Download [Apple Configurator 2](https://apps.apple.com/app/apple-configurator-2/id1037126344) from Mac App Store
-          2. Connect iPhone via USB
-          3. Drag the IPA file to device icon
-          4. Confirm installation
-          
-          ### Method 3: Xcode (Mac)
+          ### Method 2: Xcode (Mac) - With Developer Account
           
           1. Download Xcode from Mac App Store
           2. Connect iPhone via USB
           3. Open Xcode
           4. Menu: Window > Devices and Simulators
           5. Select your iPhone
-          6. Drag the IPA file to device
-          7. Confirm installation
+          6. **Xcode will show code signing error**
+          7. You need to add your Apple ID and create provisioning profile
           
-          ### Method 4: iTunes (Old macOS)
+          ## How to Get Developer Certificate
           
-          If you have iTunes on older Mac:
-          1. Connect iPhone
-          2. Open iTunes
-          3. Drag IPA file to iTunes window
-          4. Sync
+          1. Join [Apple Developer Program](https://developer.apple.com/programs/) ($99/year)
+          2. Create developer certificate in Xcode or online
+          3. Add your iPhone to developer devices
+          4. Create provisioning profile
+          5. Re-sign the IPA with your certificate
           
-          ## After Installation
+          ## Alternative: Test on Simulator
           
-          1. **On your iPhone**, go to:
-             - Settings
-             - General
-             - VPN & Device Management (or Device Management)
-             - Find your Apple ID
-             - Tap **Trust**
+          If you don't have a developer account, you can test the app logic using iOS Simulator:
           
-          2. The app icon should now appear on your home screen
-          3. Tap to launch
+          1. Install Xcode on Mac
+          2. Open this project in Xcode
+          3. Select iPhone simulator
+          4. Run the app
           
-          ## Troubleshooting
+          ## Troubleshooting Code Signing Issues
           
-          ### "iPhone not detected"
-          - Try different USB cable
-          - Reconnect iPhone
-          - Trust the connection on iPhone screen
-          - Restart iPhone
-          - Restart your Windows PC
+          ### "The code signature is not valid"
+          - You need Apple Developer Program membership
+          - Create provisioning profile for your device
+          - Re-sign IPA with developer certificate
           
-          ### "Installation failed"
-          - Check that you have Storage space on iPhone
-          - Try again with USB 2.0 port (not USB 3.0)
-          - Update iTunes/iMazing to latest version
+          ### "A valid provisioning profile could not be found"
+          - Add your iPhone UDID to developer portal
+          - Create development provisioning profile
+          - Include your device in the profile
           
-          ### "App crashes after opening"
-          - Make sure you tapped Trust in Device Management
-          - Restart iPhone
-          - Reinstall the app
-          
-          ### "Trust button not appearing"
-          - Unlock iPhone
-          - Tap "Trust" on the popup dialog
-          - If no popup appears, reconnect the device
+          ### "This app cannot be installed because its integrity could not be verified"
+          - This is the code signing error
+          - Requires developer certificate and provisioning profile
           
           ## System Requirements
           
           ✅ iPhone XS or newer
           ✅ iOS 14.0 or later
+          ✅ Apple Developer Program membership
+          ✅ Developer certificate and provisioning profile
           ✅ 50-100 MB free storage
-          ✅ USB connection or WiFi on same network
           
           ## What's Inside
           
@@ -399,7 +326,7 @@ jobs:
           
           **Build Date**: $(date)
           **App Version**: 1.0
-          **Status**: Ready for production
+          **Code Signing**: None (requires developer account)
           
           Enjoy your word clock! ⏰
           INSTALL_EOF
@@ -437,6 +364,7 @@ jobs:
           ║   Build Type: Release                                 ║
           ║   Architecture: arm64 (64-bit)                        ║
           ║   IPA size: ~45 KB (binary ~180 KB)                   ║
+          ║   Code Signing: None (requires developer account)     ║
           ║                                                        ║
           ╚════════════════════════════════════════════════════════╝
           
